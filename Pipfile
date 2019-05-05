@@ -1,0 +1,25 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+flask = "==0.10"
+flask-bootstrap = "==3.2.0.2"
+simplejson = "==3.6.0"
+pillow = "==2.5.1"
+
+
+[dev-packages]
+
+black = "*"
+pylint = "*"
+ipython = "*"
+
+
+[requires]
+
+python_version = "3.6"

@@ -18,18 +18,34 @@ $(function () {
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
-        url: 'upload'
+        url: '/upload',
+        done: function(e, data) {
+            console.log("data.result: ");
+            console.log(data.result);
+            console.log("data.textStatus: ");
+            console.log(data.textStatus);
+            console.log("data.jqXHR: ");
+            console.log(data.jqXHR);
+        },
+        add:  function (e, data) {
+            console.log("in add");
+            console.log("e is:");
+            console.log(e);
+            console.log("data is");
+            console.log(data);
+        }
     });
+    console.log("hhhhh");
 
     // Enable iframe cross-domain access via redirect option:
-    $('#fileupload').fileupload(
-        'option',
-        'redirect',
-        window.location.href.replace(
-            /\/[^\/]*$/,
-            '/cors/result.html?%s'
-        )
-    );
+    // $('#fileupload').fileupload(
+    //     'option',
+    //     'redirect',
+    //     window.location.href.replace(
+    //         /\/[^\/]*$/,
+    //         '/cors/result.html?%s'
+    //     )
+    // );
 
     if (window.location.hostname === 'blueimp.github.io') {
         // Demo settings:

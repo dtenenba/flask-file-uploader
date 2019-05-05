@@ -67,33 +67,41 @@ def create_thumbnail(image):
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
+    results = []
     if request.method == 'POST':
-        files = request.files['file']
+        print("form is {}".format(request.form))
+        print("files are {}".format(request.files))
+        # import IPython;IPython.embed()
+        for key in request.files.keys():
+        # for files in request.files.getlist('file'):
+            # files = request.files['file']
+            files = request.files[key]
+            if files:
+                filename = secure_filename(files.filename)
+                filename = gen_file_name(filename)
+                mime_type = files.content_type
 
-        if files:
-            filename = secure_filename(files.filename)
-            filename = gen_file_name(filename)
-            mime_type = files.content_type
+                if not allowed_file(files.filename):
+                    result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
 
-            if not allowed_file(files.filename):
-                result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+                else:
+                    # save file to disk
+                    uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    files.save(uploaded_file_path)
 
-            else:
-                # save file to disk
-                uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                files.save(uploaded_file_path)
+                    # create thumbnail after saving
+                    # if mime_type.startswith('image'):
+                    #     create_thumbnail(filename)
+                    
+                    # get file size after saving
+                    size = os.path.getsize(uploaded_file_path)
 
-                # create thumbnail after saving
-                if mime_type.startswith('image'):
-                    create_thumbnail(filename)
+                    # return json for js call back
+                    result = uploadfile(name=filename, type=mime_type, size=size)
                 
-                # get file size after saving
-                size = os.path.getsize(uploaded_file_path)
+                results.append(result.get_file())
 
-                # return json for js call back
-                result = uploadfile(name=filename, type=mime_type, size=size)
-            
-            return simplejson.dumps({"files": [result.get_file()]})
+        return simplejson.dumps({"files": [results]})
 
     if request.method == 'GET':
         # get all file in ./data directory
@@ -137,6 +145,14 @@ def get_thumbnail(filename):
 @app.route("/data/<string:filename>", methods=['GET'])
 def get_file(filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER']), filename=filename)
+
+@app.route('/i', methods=['GET', 'POST'])
+def index2():
+    return render_template('i.html')
+
+@app.route('/j', methods=['GET', 'POST'])
+def index3():
+    return render_template('j.html')
 
 
 @app.route('/', methods=['GET', 'POST'])
